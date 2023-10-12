@@ -2,8 +2,8 @@
     <modelVersion>4.0.0</modelVersion>
     <!-- Vaadin project from https://github.com/vaadin/skeleton-starter-flow-spring -->
     <groupId>org.vaadin.example</groupId>
-    <artifactId>my-todo</artifactId>
-    <name>My Todo</name>
+    <artifactId>my-cooking-book</artifactId>
+    <name>My cooking book</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -158,7 +158,10 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
