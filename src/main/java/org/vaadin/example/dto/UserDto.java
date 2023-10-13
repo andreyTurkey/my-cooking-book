@@ -14,15 +14,19 @@ import javax.validation.constraints.NotBlank;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
 
-    private Long id;
+    //@NotBlank
+    private String firstName;
 
-    @NotBlank
+    //@NotBlank
     private String name;
 
-    @NotBlank
+    //@NotBlank
     private String password;
 
-    @NotBlank
+    //@NotBlank
+    private String confirmPassword;
+
+    //@NotBlank
     private String email;
 
     private String phoneNumber;

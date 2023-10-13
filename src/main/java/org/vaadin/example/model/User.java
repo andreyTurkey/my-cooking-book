@@ -5,26 +5,49 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Collection;
 
 @Entity
-@Data
+//@Data
+@Getter
+@Setter
+@Table(name = "users", schema = "public")
 @NoArgsConstructor(access= AccessLevel.PRIVATE, force=true)
 @RequiredArgsConstructor
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "first_name")
+    private final String firstName;
+
+    @Column(name = "user_name")
     private final String username;
+
+    @Column(name = "password")
     private final String password;
+
+    @Column(name = "email")
     private final String email;
+
+    @Column(name = "phone_number")
     private final String phoneNumber;
+
+   /* public User(String firstName, String username, String password, String email, String phoneNumber) {
+        this.firstName = firstName;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public User() {
+    }*/
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

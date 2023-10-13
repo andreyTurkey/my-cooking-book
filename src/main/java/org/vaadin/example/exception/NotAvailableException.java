@@ -1,6 +1,6 @@
 package org.vaadin.example.exception;
 
-public class NotAvailableException extends RuntimeException {
+public class NotAvailableException extends Exception {
 
     public NotAvailableException(String message) {
         super(message);

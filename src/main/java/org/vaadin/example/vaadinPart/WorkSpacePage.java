@@ -10,12 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.vaadin.example.VaadinSecurity.MainLayout;
 import org.vaadin.example.vaadinPart.RegistrationDone;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 
 @Route("/workSpace")
+@PermitAll
 @Setter
 @Slf4j
-@RolesAllowed(value = "USER")
+//@RolesAllowed(value = "USER")
 public class WorkSpacePage extends VerticalLayout  {
 
     private String userEmail;

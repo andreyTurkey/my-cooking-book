@@ -16,6 +16,7 @@ public class UserMapper {
 
     public static User getUser(UserDto userDto) {
         User user = new User(
+                userDto.getFirstName(),
                 userDto.getName(),
                 userDto.getPassword(),
                 userDto.getEmail(),

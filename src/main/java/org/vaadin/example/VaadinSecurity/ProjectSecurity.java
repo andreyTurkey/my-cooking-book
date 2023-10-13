@@ -1,6 +1,5 @@
 package org.vaadin.example.VaadinSecurity;
 
-
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,11 +9,17 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.vaadin.example.repository.UserRepository;
 import org.vaadin.example.vaadinPart.LoginView;
 
-//@EnableWebSecurity
 @Configuration
 public class ProjectSecurity extends VaadinWebSecurity {
+
+    private final UserRepository userRepository;
+
+    public ProjectSecurity(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
