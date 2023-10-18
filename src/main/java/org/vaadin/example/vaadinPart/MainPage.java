@@ -11,13 +11,8 @@ import lombok.Setter;
 @Route(value = "")
 @PageTitle("Public View")
 @AnonymousAllowed
-//@CssImport("./styles/shared-styles.css") // на строке все зависает
-//@CssImport(value = "./styles/vaadin-text-field-styles.css", themeFor = "vaadin-text-field") // на строке все зависает
-//@CssImport("./styles/main-page.css") // на строке все зависает
 @Setter
-public class MainPage extends VerticalLayout /*implements HasUrlParameter<String>*/ {
-
-    private String userEmail;
+public class MainPage extends VerticalLayout {
 
     public MainPage() {
 
@@ -46,9 +41,4 @@ public class MainPage extends VerticalLayout /*implements HasUrlParameter<String
         verticalLayout.setAlignItems(Alignment.CENTER);
         add(verticalLayout);
     }
-
-   /* @Override
-    public void setParameter(BeforeEvent beforeEvent, String s) {
-        setUserEmail(s);
-    }*/
 }

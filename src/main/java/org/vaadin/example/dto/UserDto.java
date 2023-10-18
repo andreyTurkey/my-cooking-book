@@ -3,31 +3,20 @@ package org.vaadin.example.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.NotBlank;
-
-@Getter
-@Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
 
-    //@NotBlank
-    private String firstName;
+    String firstName;
 
-    //@NotBlank
-    private String name;
+    String name;
 
-    //@NotBlank
-    private String password;
+    String password;
 
-    //@NotBlank
-    private String confirmPassword;
+    String confirmPassword;
 
-    //@NotBlank
-    private String email;
+    String email;
 
-    private String phoneNumber;
+    String phoneNumber;
 }

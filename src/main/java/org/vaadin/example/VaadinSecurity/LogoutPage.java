@@ -11,12 +11,10 @@ import javax.annotation.security.PermitAll;
 
 @Route(value = "logout")
 @PermitAll
-public class MainLayout extends VerticalLayout {
+public class LogoutPage extends VerticalLayout {
 
-    private SecurityService securityService;
 
-    public MainLayout(@Autowired SecurityService securityService) {
-        this.securityService = securityService;
+    public LogoutPage(@Autowired SecurityService securityService) {
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);

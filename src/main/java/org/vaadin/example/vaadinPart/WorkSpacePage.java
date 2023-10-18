@@ -7,11 +7,11 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.vaadin.example.VaadinSecurity.MainLayout;
-import org.vaadin.example.vaadinPart.RegistrationDone;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.example.VaadinSecurity.LogoutPage;
+import org.vaadin.example.VaadinSecurity.SecurityService;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 
 @Route("/workSpace")
 @PermitAll
@@ -21,6 +21,9 @@ import javax.annotation.security.RolesAllowed;
 public class WorkSpacePage extends VerticalLayout  {
 
     private String userEmail;
+
+    @Autowired
+    private SecurityService securityService;
 
     public WorkSpacePage() {
 
@@ -48,9 +51,12 @@ public class WorkSpacePage extends VerticalLayout  {
         buyProduct.addClickListener(e -> buyProduct.getUI()
                 .ifPresent(ui -> ui.navigate(RegistrationDone.class, userEmail)));
 
-        Button logout = new Button("Выйти", new Icon(VaadinIcon.CART));
+        /*Button logout = new Button("Выйти", new Icon(VaadinIcon.CART));
         logout.addClickListener(e -> logout.getUI()
-                .ifPresent(ui -> ui.navigate(MainLayout.class)));
+                .ifPresent(ui -> ui.navigate(LogoutPage.class)));*/
+
+        Button logout = new Button("Выйти", new Icon(VaadinIcon.CART));
+        logout.addClickListener(e -> securityService.logout());
 
 
         VerticalLayout verticalLayout = new VerticalLayout(newRecipe, myRecipes, notes, buyProduct, logout);

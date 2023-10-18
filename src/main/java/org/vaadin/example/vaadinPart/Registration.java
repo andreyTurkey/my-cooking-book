@@ -15,8 +15,9 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.example.dto.UserDto;
+import org.vaadin.example.model.Authority;
+import org.vaadin.example.service.AuthorityService;
 import org.vaadin.example.service.UserService;
 
 @Route("/register")
@@ -33,7 +34,7 @@ public class Registration extends VerticalLayout {
     final PasswordField confirmPassword;
     final UserDto userDto = new UserDto();
 
-    public Registration(UserService userService) {
+    public Registration(UserService userService, AuthorityService authorityService) {
 
         Binder<UserDto> binderValidation = new Binder<>(UserDto.class);
 
@@ -107,8 +108,11 @@ public class Registration extends VerticalLayout {
                 binder.writeBean(userDto);
 
                 checkRegistration(userDto);
-
+                log.error("ПОЛУЧЕННЫЙ ЮЗЕР - " + userDto);
                 userService.addNewUser(userDto);
+                if (userDto != null) {
+                    authorityService.addNewUserAuthority(new Authority(userDto.getName(), "write"));
+                }
 
             } catch (ValidationException e) {
                 throw new RuntimeException(e);
@@ -125,8 +129,6 @@ public class Registration extends VerticalLayout {
 
         buttonLayout.setPadding(true);
         add(buttonLayout);
-
-
     }
 
     public void clearField() {

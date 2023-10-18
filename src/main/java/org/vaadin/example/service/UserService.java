@@ -6,6 +6,8 @@ import org.vaadin.example.mapper.UserMapper;
 import org.vaadin.example.repository.UserRepository;
 import org.vaadin.example.model.User;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -20,8 +22,8 @@ public class UserService {
     }
 
     public boolean isLoginExist(String login) {
-        User user = repo.findByUsername(login);
-        if (user != null) {
+        Optional user = repo.findUsersByUsername(login);
+        if (user.isPresent()) {
             return true;
         } else {
             return false;
