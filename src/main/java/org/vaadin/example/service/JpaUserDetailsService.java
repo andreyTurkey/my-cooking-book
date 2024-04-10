@@ -1,5 +1,6 @@
 package org.vaadin.example.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,6 +14,7 @@ import java.util.function.Supplier;
 
 @Primary
 @Service
+@Slf4j
 public class JpaUserDetailsService implements UserDetailsService {
 
     @Autowired
@@ -24,7 +26,7 @@ public class JpaUserDetailsService implements UserDetailsService {
 
         User user = userRepository.findUsersByUsername(username)
                 .orElseThrow(s);
-
+        log.debug("Пользователь из базы: " + user);
         return new CustomUserDetails(user);
     }
 }

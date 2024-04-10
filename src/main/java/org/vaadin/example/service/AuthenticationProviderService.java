@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.vaadin.example.model.CustomUserDetails;
 
-//@Service
+@Service
 public class AuthenticationProviderService implements AuthenticationProvider {
 
     @Autowired

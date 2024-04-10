@@ -1,17 +1,29 @@
 package org.vaadin.example.vaadinPart;
 
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.cookieconsent.CookieConsent;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.validator.EmailValidator;
+import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.spring.annotation.SpringComponent;
+import com.vaadin.flow.spring.annotation.UIScope;
+import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -20,46 +32,63 @@ import org.vaadin.example.model.Authority;
 import org.vaadin.example.service.AuthorityService;
 import org.vaadin.example.service.UserService;
 
+import java.io.DataInput;
+
 @Route("/register")
 @AnonymousAllowed
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Registration extends VerticalLayout {
+@VaadinSessionScope
+public class RegistrationForm extends VerticalLayout {
 
-    final TextField nameField;
+    TextField nameField;
     final TextField login;
     final PasswordField passwordField;
-    final EmailField emailField;
+    EmailField emailField;
     final TextField phoneNum;
     final PasswordField confirmPassword;
     final UserDto userDto = new UserDto();
 
-    public Registration(UserService userService, AuthorityService authorityService) {
 
-        Binder<UserDto> binderValidation = new Binder<>(UserDto.class);
+    public RegistrationForm(UserService userService, AuthorityService authorityService) {
+        /*CookieConsent cookieConsent = new CookieConsent();
+        add(cookieConsent);*/
+        Binder<UserDto> binder = new Binder<>(UserDto.class);
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
 
-        nameField = new TextField("Name");
+        /*nameField = new TextField("Name");
         nameField.setClearButtonVisible(true);
+        nameField.setMaxLength(50);
         add(nameField);
 
         emailField = new EmailField("Email address");
         emailField.setClearButtonVisible(true);
+        emailField.setMaxLength(50);
+        emailField.setRequiredIndicatorVisible(true);
+
+
         add(emailField);
 
-        binderValidation.forField(emailField)
+        binder.forField(emailField)
+                .withValidator(o -> !o.isBlank(), "Поле должно быть заполнено.")
                 .withValidator(o -> !userService.isEmailExist(o),
                         "Пользователь с указанной почтой уже зарегистрирован. Укажите другую почту.")
                 .withValidator(new EmailValidator(
                         "Формат почты указан неверно. Проверьте правильность написания почтового адреса."))
-                .bind(UserDto::getEmail, UserDto::setEmail);
+                .bind(UserDto::getEmail, UserDto::setEmail);*/
 
         phoneNum = new TextField("Phone number");
         phoneNum.setClearButtonVisible(true);
-        phoneNum.setHelperText("Формат: +7(925)081-60-36");
+        phoneNum.setMaxLength(12);
+        //phoneNum.setHelperText("Формат: +79250816078");
+        phoneNum.setHelperText("Формат: +79250816078. Вы можете не указывать телефон. Данное поле для учебных целей");
+        RegexpValidator regexpValidator = new RegexpValidator("Неверноый формат номера", "^((8|\\+*)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$");
+        binder.forField(phoneNum)
+                .withValidator(regexpValidator)
+                .bind(UserDto::getName, UserDto::setName);
         add(phoneNum);
 
         login = new TextField("Login");
@@ -69,17 +98,21 @@ public class Registration extends VerticalLayout {
         login.setHelperText("Обязательное поле");
         add(login);
 
-
-        binderValidation.forField(login)
+        binder.forField(login)
                 .withValidator(o -> !userService.isLoginExist(o),
                         "Логин занят. Придумайте другой.")
+                .withValidator(o -> !o.isBlank(), "Поле должно быть заполнено.")
                 .bind(UserDto::getName, UserDto::setName);
 
         passwordField = new PasswordField("Password");
         passwordField.setClearButtonVisible(true);
+
+
         add(passwordField);
 
         confirmPassword = new PasswordField("Confirm the password");
+
+
         confirmPassword.setClearButtonVisible(true);
         add(confirmPassword);
 
@@ -95,11 +128,10 @@ public class Registration extends VerticalLayout {
 
 
         Button createAccount = new Button("Create account", event -> {
-            Binder<UserDto> binder = new Binder<>(UserDto.class);
-            binder.forField(nameField).bind(UserDto::getFirstName, UserDto::setFirstName);
+            //binder.forField(nameField).bind(UserDto::getFirstName, UserDto::setFirstName);
             binder.forField(passwordField).bind(UserDto::getPassword, UserDto::setPassword);
             binder.forField(confirmPassword).bind(UserDto::getConfirmPassword, UserDto::setConfirmPassword);
-            binder.forField(emailField).bind(UserDto::getEmail, UserDto::setEmail);
+            //binder.forField(emailField).bind(UserDto::getEmail, UserDto::setEmail);
 
             binder.forField(login).bind(UserDto::getName, UserDto::setName);
             binder.forField(phoneNum).bind(UserDto::getPhoneNumber, UserDto::setPhoneNumber);
@@ -107,11 +139,12 @@ public class Registration extends VerticalLayout {
             try {
                 binder.writeBean(userDto);
 
-                checkRegistration(userDto);
+                if (!checkRegistrationAndAddNewUser(userDto, userService)) {
+
+                }
                 log.error("ПОЛУЧЕННЫЙ ЮЗЕР - " + userDto);
-                userService.addNewUser(userDto);
                 if (userDto != null) {
-                    authorityService.addNewUserAuthority(new Authority(userDto.getName(), "write"));
+                    authorityService.addNewUserAuthority(new Authority(userDto.getName(), "USER"));
                 }
 
             } catch (ValidationException e) {
@@ -129,7 +162,13 @@ public class Registration extends VerticalLayout {
 
         buttonLayout.setPadding(true);
         add(buttonLayout);
+
+        Text warning = new Text(
+                "Настоящее приложение в стадии разработки и служит для демонстрации навыков раработчика. Мы не гарантируем сохранность данных. Владелец сайта не является оператором персональных данных."
+        );
+        add(warning);
     }
+
 
     public void clearField() {
         passwordField.setValue("");
@@ -140,26 +179,24 @@ public class Registration extends VerticalLayout {
         passwordField.setValue("");
     }
 
-    private void checkRegistration(UserDto userDto) {
+    private boolean checkRegistrationAndAddNewUser(UserDto userDto, UserService userService) {
         final String PASSWORD_MISTAKE = "Пароли не совпадают. Проверьте правильность ввода.";
         final String LOGIN_MISTAKE = "Обязательное поле login пустое. Проверьте правильность ввода.";
 
         if (!userDto.getPassword().equals(userDto.getConfirmPassword()) && userDto.getName().isBlank()) {
-            getUI().ifPresent(ui -> ui.navigate(MistakePage.class, (PASSWORD_MISTAKE + " " + LOGIN_MISTAKE)));
-        }
-
-        if (userDto.getPassword().isBlank() && userDto.getName().isBlank()) {
-            getUI().ifPresent(ui -> ui.navigate(MistakePage.class, (PASSWORD_MISTAKE + " " + LOGIN_MISTAKE)));
-        }
-
-        if (!userDto.getPassword().equals(userDto.getConfirmPassword())) {
+            getUI().ifPresent(ui -> ui.navigate(MistakePage.class, (PASSWORD_MISTAKE + LOGIN_MISTAKE)));
+        } else if (userDto.getPassword().isBlank() && userDto.getName().isBlank()) {
+            getUI().ifPresent(ui -> ui.navigate(MistakePage.class, (PASSWORD_MISTAKE + LOGIN_MISTAKE)));
+        } else if (!userDto.getPassword().equals(userDto.getConfirmPassword())) {
             getUI().ifPresent(ui -> ui.navigate(MistakePage.class,
                     PASSWORD_MISTAKE));
-        }
-
-        if (userDto.getName().isBlank()) {
+        } else if (userDto.getName().isBlank()) {
             getUI().ifPresent(ui -> ui.navigate(MistakePage.class,
                     LOGIN_MISTAKE));
+        } else {
+            userService.addNewUser(userDto);
+            return true;
         }
+        return false;
     }
 }

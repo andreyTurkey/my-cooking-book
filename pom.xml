@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <vaadin.version>23.2.0</vaadin.version>
 
         <selenium.version>3.141.59</selenium.version>
@@ -108,7 +108,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
@@ -242,6 +247,7 @@
             <!-- Production mode is activated using -Pproduction -->
             <id>production</id>
             <build>
+
                 <plugins>
                     <plugin>
                         <groupId>com.vaadin</groupId>
@@ -271,12 +277,14 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <executions>
+
                             <execution>
                                 <id>start-spring-boot</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>start</goal>
                                 </goals>
+
                             </execution>
                             <execution>
                                 <id>stop-spring-boot</id>
@@ -303,6 +311,17 @@
                         <configuration>
                             <trimStackTrace>false</trimStackTrace>
                             <enableAssertions>true</enableAssertions>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.1.2</version>
+                        <configuration>
+                            <!-- Generated file that shouldn't be included in add-ons -->
+                            <excludes>
+                                <exclude>META-INF/VAADIN/config/flow-build-info.json</exclude>
+                            </excludes>
                         </configuration>
                     </plugin>
                 </plugins>

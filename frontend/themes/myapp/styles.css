@@ -1,0 +1,46 @@
+/* Import your application global css files here or add the styles directly to this file */
+h1 {
+    color: olive;
+    font-size: 40pt;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.picture {
+    background: url("Pizza_920x1080.jpg");
+    background-size: 100vw 120vh;
+    background-repeat: no-repeat;
+}
+
+html {
+
+    /*background: url("Pizza_920x1080.jpg");*/
+    /*background-size: 100vw 120vh;*/
+    /*background-repeat: no-repeat;*/
+    /*filter: opacity(40%);*/
+}
+
+.button {
+    background-color: olive;
+    color: black;
+    text-align: center;
+    font-size: 15px;
+}
+
+.opacity {
+    filter: opacity(200%);
+}
+
+.shadowbox {
+    border-style: none;
+    width: 45em;
+    border: 1px solid #333;
+    box-shadow: 8px 8px 5px #444;
+    padding: 8px 12px;
+    background-image: linear-gradient(45deg, red, blue);
+}
+
+/*
+.my-view  {
+    color: black;
+    font-size: 50pt;
+}*/

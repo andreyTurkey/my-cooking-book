@@ -19,4 +19,6 @@ public class UserDto {
     String email;
 
     String phoneNumber;
+
+    Boolean enabled;
 }

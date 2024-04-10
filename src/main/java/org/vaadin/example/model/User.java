@@ -36,4 +36,7 @@ public class User {
 
     @Column(name = "enabled")
     private boolean enabled;
+
+    @Column(name = "email_confirmed")
+    private boolean  emailConfirmed;
 }
