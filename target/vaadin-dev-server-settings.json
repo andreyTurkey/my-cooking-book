@@ -1,0 +1,14 @@
+{
+  "frontendFolder": "/Users/andreyturkey/Documents/dev/my-cooking-book/frontend",
+  "themeFolder": "themes",
+  "themeResourceFolder": "/Users/andreyturkey/Documents/dev/my-cooking-book/target/flow-frontend",
+  "staticOutput": "/Users/andreyturkey/Documents/dev/my-cooking-book/target/classes/META-INF/VAADIN/webapp/VAADIN/static",
+  "generatedFolder": "generated",
+  "frontendBundleOutput": "/Users/andreyturkey/Documents/dev/my-cooking-book/target/classes/META-INF/VAADIN/webapp",
+  "addonFrontendFolder": "target/flow-frontend/",
+  "themeName": "myapp",
+  "clientServiceWorkerSource": "/Users/andreyturkey/Documents/dev/my-cooking-book/target/sw.ts",
+  "pwaEnabled": false,
+  "offlineEnabled": false,
+  "offlinePath": "'offline.html'"
+}
