@@ -396,6 +396,7 @@
     "@vaadin/common-frontend": "$@vaadin/common-frontend",
     "lit": "$lit",
     "date-fns": "$date-fns",
-    "proj4": "$proj4"
+    "proj4": "$proj4",
+    "lumo-css-framework": "$lumo-css-framework"
   }
 }
