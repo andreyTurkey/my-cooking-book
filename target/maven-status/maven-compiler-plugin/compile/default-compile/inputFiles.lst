@@ -15,6 +15,7 @@
 /Users/andreyturkey/Documents/dev/my-cooking-book/src/main/java/org/vaadin/example/VaadinSecurity/LogoutPage.java
 /Users/andreyturkey/Documents/dev/my-cooking-book/src/main/java/org/vaadin/example/model/User.java
 /Users/andreyturkey/Documents/dev/my-cooking-book/src/main/java/org/vaadin/example/repository/ProductNameRepository.java
+/Users/andreyturkey/Documents/dev/my-cooking-book/src/main/java/org/vaadin/example/mail/RegistrationMail.java
 /Users/andreyturkey/Documents/dev/my-cooking-book/src/main/java/org/vaadin/example/mapper/RecipeMapper.java
 /Users/andreyturkey/Documents/dev/my-cooking-book/src/main/java/org/vaadin/example/vaadinPart/MainPage.java
 /Users/andreyturkey/Documents/dev/my-cooking-book/src/main/java/org/vaadin/example/dto/RecipeDto.java

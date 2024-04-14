@@ -1,38 +1,32 @@
 package org.vaadin.example.vaadinPart;
 
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.cookieconsent.CookieConsent;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
-import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import com.vaadin.flow.spring.annotation.SpringComponent;
-import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSendException;
 import org.vaadin.example.dto.UserDto;
+import org.vaadin.example.mail.RegistrationMail;
 import org.vaadin.example.model.Authority;
 import org.vaadin.example.service.AuthorityService;
 import org.vaadin.example.service.UserService;
 
-import java.io.DataInput;
+import javax.mail.MessagingException;
+import java.util.Map;
 
 @Route("/register")
 @AnonymousAllowed
@@ -48,9 +42,14 @@ public class RegistrationForm extends VerticalLayout {
     final TextField phoneNum;
     final PasswordField confirmPassword;
     final UserDto userDto = new UserDto();
+    final RegistrationMail registrationMail;
+    Map<Object, Exception> exceptionsByMails;
 
 
-    public RegistrationForm(UserService userService, AuthorityService authorityService) {
+    public RegistrationForm(UserService userService,
+                            AuthorityService authorityService,
+                            @Autowired RegistrationMail registrationMail) {
+        this.registrationMail = registrationMail;
         /*CookieConsent cookieConsent = new CookieConsent();
         add(cookieConsent);*/
         Binder<UserDto> binder = new Binder<>(UserDto.class);
@@ -139,18 +138,21 @@ public class RegistrationForm extends VerticalLayout {
             try {
                 binder.writeBean(userDto);
 
-                if (!checkRegistrationAndAddNewUser(userDto, userService)) {
+               checkRegistrationAndAddNewUser(userDto, userService);
 
-                }
                 log.error("ПОЛУЧЕННЫЙ ЮЗЕР - " + userDto);
                 if (userDto != null) {
                     authorityService.addNewUserAuthority(new Authority(userDto.getName(), "USER"));
+                    registrationMail.sendMessage();
                 }
 
-            } catch (ValidationException e) {
+            } catch (ValidationException | MessagingException e) {
                 throw new RuntimeException(e);
+            } catch (MailSendException exc) {
+                exceptionsByMails = exc.getFailedMessages();
             }
         });
+        log.debug("ПРОБЛЕМА С ОТПРАВКОЙ ПИСЕМ НА MAIL = " + exceptionsByMails);
         createAccount.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 
         createAccount.addClickListener(e -> createAccount.getUI()

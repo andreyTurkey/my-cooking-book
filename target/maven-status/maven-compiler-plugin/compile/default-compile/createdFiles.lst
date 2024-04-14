@@ -41,5 +41,6 @@ org/vaadin/example/model/PersonForTest.class
 org/vaadin/example/dto/RecipeDto.class
 org/vaadin/example/VaadinSecurity/LogoutPage.class
 org/vaadin/example/vaadinPart/RegistrationForm.class
+org/vaadin/example/mail/RegistrationMail.class
 org/vaadin/example/Application.class
 org/vaadin/example/VaadinSecurity/ProjectSecurity.class
