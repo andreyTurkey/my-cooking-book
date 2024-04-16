@@ -24,7 +24,7 @@ public class JpaUserDetailsService implements UserDetailsService {
     public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Supplier<UsernameNotFoundException> s = () -> new UsernameNotFoundException("Пользователь не найден");
 
-        User user = userRepository.findUsersByUsername(username)
+        User user = userRepository.findUserByUsername(username)
                 .orElseThrow(s);
         log.debug("Пользователь из базы: " + user);
         return new CustomUserDetails(user);

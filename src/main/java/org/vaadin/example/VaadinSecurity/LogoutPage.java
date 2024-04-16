@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 
 import javax.annotation.security.PermitAll;
 
@@ -24,7 +25,8 @@ public class LogoutPage extends VerticalLayout {
         logo.addClassName("logo");
 
         VerticalLayout header;
-        if (securityService.getAuthenticatedUser() != null) {
+        //if (securityService.getAuthenticatedUser() != null) {
+        if (!securityService.getCurrentUserLogin().equals("Anonymous")) {
             Button logout = new Button("Выйти", click ->
                     securityService.logout());
             header = new VerticalLayout(logo, logout);

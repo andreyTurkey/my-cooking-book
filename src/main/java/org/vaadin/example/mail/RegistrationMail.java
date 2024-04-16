@@ -1,36 +1,72 @@
 package org.vaadin.example.mail;
 
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.jdbc.datasource.AbstractDriverBasedDataSource;
 import org.springframework.stereotype.Component;
+import org.vaadin.example.dto.UserDto;
+import org.vaadin.example.exception.ReadPropertiesException;
 
-import javax.mail.MessagingException;
+import javax.mail.*;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.persistence.Column;
-
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.Properties;
 
 @Component
 public class RegistrationMail {
 
-    private final JavaMailSender mailSender;
+    private Address userEmail = new InternetAddress("andrei4-09@mail.ru");
 
-    public RegistrationMail(@Autowired JavaMailSender javaMailSender) {
-        this.mailSender = javaMailSender;
+    public RegistrationMail() throws AddressException {
     }
 
-    public void sendMessage() throws MessagingException {
+    public void sendMessage(UserDto userDto) throws ReadPropertiesException, MessagingException {
 
-        final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
-        final MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
+        final Properties props = new Properties();
+        try (InputStream fis = new FileInputStream(
+                "/Users/andreyturkey/Documents/dev/my-cooking-book/src/main/resources/mail.properties")) {
+            props.load(fis);
+        } catch (Exception e) {
+            throw new ReadPropertiesException("Unable to find the specified mail.properties file");
+        }
 
+        Session session = Session.getDefaultInstance(props);
 
-        messageHelper.setFrom("andrei4-09@mail.ru");
-        messageHelper.setTo("andrei4-09@mail.ru");
-        messageHelper.setSubject("Java 20 new hot features");
-        messageHelper.setText("Java 20 new hot features. Look at the attachment.\nAlso look at my great cat!");
-        //messageHelper.addInline("", FileUtils.getFile());
-        //messageHelper.addAttachment("java-new-features.txt", FileUtils.getFile());
+        final MimeMessage message = new MimeMessage(session);
+
+        message.addFrom(new InternetAddress[]{new InternetAddress("andrei4-09@mail.ru")});
+
+        message.setSubject("Регистрация на сайте my-cooking-book.ru");
+
+        message.setText(String.format("Здравствуйте!\n" +
+                        "Поздравляем с успешной регистрацией в приложении для хранения рецептов.\n" +
+                "\n"+
+                "Данные для входа:\n" +
+                "\n" +
+                "Логин: %s\n" +
+        "Пароль: %s", userDto.getName(), userDto.getPassword()));
+
+        message.addRecipient(Message.RecipientType.TO, userEmail);
+
+        message.setSentDate(new Date());
+
+        String userLogin = "andrei4-09@mail.ru";
+        String userPassword = "dYQsCwZuXSLTVMLMEeMT";
+
+        Transport transport = session.getTransport("smtp");
+        transport.connect("smtp.mail.ru", 465, userLogin, userPassword);
+
+        transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
+    }
+
+    public boolean setUserEmail(UserDto userDto) throws AddressException {
+        if (!userDto.getEmail().isBlank()) {
+            this.userEmail = new InternetAddress(userDto.getEmail());
+            return true;
+        }  else {
+            return false;
+        }
     }
 }

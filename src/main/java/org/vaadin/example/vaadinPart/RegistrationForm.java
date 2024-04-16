@@ -3,6 +3,7 @@ package org.vaadin.example.vaadinPart;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -10,6 +11,7 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.validator.EmailValidator;
 import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -18,15 +20,18 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailSendException;
+import org.vaadin.example.UserLogin;
+import org.vaadin.example.VaadinSecurity.SecurityService;
 import org.vaadin.example.dto.UserDto;
+import org.vaadin.example.exception.ReadPropertiesException;
 import org.vaadin.example.mail.RegistrationMail;
 import org.vaadin.example.model.Authority;
 import org.vaadin.example.service.AuthorityService;
 import org.vaadin.example.service.UserService;
 
 import javax.mail.MessagingException;
-import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Route("/register")
 @AnonymousAllowed
@@ -43,22 +48,27 @@ public class RegistrationForm extends VerticalLayout {
     final PasswordField confirmPassword;
     final UserDto userDto = new UserDto();
     final RegistrationMail registrationMail;
-    Map<Object, Exception> exceptionsByMails;
 
 
     public RegistrationForm(UserService userService,
                             AuthorityService authorityService,
-                            @Autowired RegistrationMail registrationMail) {
+                            @Autowired RegistrationMail registrationMail,
+                            @Autowired SecurityService securityService) {
         this.registrationMail = registrationMail;
-        /*CookieConsent cookieConsent = new CookieConsent();
-        add(cookieConsent);*/
+
+        if (!UserLogin.getCurrentUserLogin().equals("Anonymous")) {
+            securityService.logout();
+        }
+
+        log.debug("ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ SECURITY " + UserLogin.getCurrentUserLogin());
+
         Binder<UserDto> binder = new Binder<>(UserDto.class);
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
 
-        /*nameField = new TextField("Name");
+        nameField = new TextField("Name");
         nameField.setClearButtonVisible(true);
         nameField.setMaxLength(50);
         add(nameField);
@@ -67,8 +77,6 @@ public class RegistrationForm extends VerticalLayout {
         emailField.setClearButtonVisible(true);
         emailField.setMaxLength(50);
         emailField.setRequiredIndicatorVisible(true);
-
-
         add(emailField);
 
         binder.forField(emailField)
@@ -77,12 +85,12 @@ public class RegistrationForm extends VerticalLayout {
                         "Пользователь с указанной почтой уже зарегистрирован. Укажите другую почту.")
                 .withValidator(new EmailValidator(
                         "Формат почты указан неверно. Проверьте правильность написания почтового адреса."))
-                .bind(UserDto::getEmail, UserDto::setEmail);*/
+                .bind(UserDto::getEmail, UserDto::setEmail);
 
         phoneNum = new TextField("Phone number");
         phoneNum.setClearButtonVisible(true);
         phoneNum.setMaxLength(12);
-        //phoneNum.setHelperText("Формат: +79250816078");
+
         phoneNum.setHelperText("Формат: +79250816078. Вы можете не указывать телефон. Данное поле для учебных целей");
         RegexpValidator regexpValidator = new RegexpValidator("Неверноый формат номера", "^((8|\\+*)[\\- ]?)?(\\(?\\d{3}\\)?[\\- ]?)?[\\d\\- ]{7,10}$");
         binder.forField(phoneNum)
@@ -105,13 +113,9 @@ public class RegistrationForm extends VerticalLayout {
 
         passwordField = new PasswordField("Password");
         passwordField.setClearButtonVisible(true);
-
-
         add(passwordField);
 
         confirmPassword = new PasswordField("Confirm the password");
-
-
         confirmPassword.setClearButtonVisible(true);
         add(confirmPassword);
 
@@ -125,54 +129,77 @@ public class RegistrationForm extends VerticalLayout {
         cancel.addClickListener(e -> cancel.getUI()
                 .ifPresent(ui -> ui.navigate(MainPage.class)));
 
-
         Button createAccount = new Button("Create account", event -> {
-            //binder.forField(nameField).bind(UserDto::getFirstName, UserDto::setFirstName);
+            binder.forField(nameField).bind(UserDto::getFirstName, UserDto::setFirstName);
             binder.forField(passwordField).bind(UserDto::getPassword, UserDto::setPassword);
             binder.forField(confirmPassword).bind(UserDto::getConfirmPassword, UserDto::setConfirmPassword);
-            //binder.forField(emailField).bind(UserDto::getEmail, UserDto::setEmail);
+            binder.forField(emailField).bind(UserDto::getEmail, UserDto::setEmail);
 
             binder.forField(login).bind(UserDto::getName, UserDto::setName);
             binder.forField(phoneNum).bind(UserDto::getPhoneNumber, UserDto::setPhoneNumber);
 
             try {
                 binder.writeBean(userDto);
-
-               checkRegistrationAndAddNewUser(userDto, userService);
-
-                log.error("ПОЛУЧЕННЫЙ ЮЗЕР - " + userDto);
-                if (userDto != null) {
-                    authorityService.addNewUserAuthority(new Authority(userDto.getName(), "USER"));
-                    registrationMail.sendMessage();
-                }
-
-            } catch (ValidationException | MessagingException e) {
+                checkRegistrationAndAddNewUser(userDto, userService);
+                authorityService.addNewUserAuthority(new Authority(userDto.getName(), "USER"));
+            } catch (ValidationException e) {
                 throw new RuntimeException(e);
-            } catch (MailSendException exc) {
-                exceptionsByMails = exc.getFailedMessages();
             }
         });
-        log.debug("ПРОБЛЕМА С ОТПРАВКОЙ ПИСЕМ НА MAIL = " + exceptionsByMails);
+
         createAccount.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 
-        createAccount.addClickListener(e -> createAccount.getUI()
-                .ifPresent(ui -> ui.navigate(WorkSpacePage.class)));
+        createAccount.addClickListener(e -> {
+                    if (!userDto.getEmail().isBlank()) {
+                        sendAboutRegistrationMail();
+                        log.debug("ПОЛЬЗОВАТЕЛЬ " + userDto);
+                        createAccount.getUI()
+                                .ifPresent(ui -> ui.navigate(ConfirmRegistrationPage.class));
+                    } else {
+                        createAccount.getUI()
+                                .ifPresent(ui -> ui.navigate(WorkSpacePage.class));
+                    }
+                }
+        );
 
         HorizontalLayout buttonLayout = new HorizontalLayout(createAccount, clear, cancel);
-
         buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-
         buttonLayout.setPadding(true);
         add(buttonLayout);
 
         Text warning = new Text(
-                "Настоящее приложение в стадии разработки и служит для демонстрации навыков раработчика. Мы не гарантируем сохранность данных. Владелец сайта не является оператором персональных данных."
+                "Настоящее приложение в стадии разработки и служит для демонстрации навыков раработчика. " +
+                        "Мы не гарантируем сохранность данных. " +
+                        "Владелец сайта не является оператором персональных данных."
         );
         add(warning);
     }
 
+    private void sendAboutRegistrationMail() {
+        Runnable task = () -> {
+            try {
+                if (registrationMail.setUserEmail(userDto)) {
+                    registrationMail.sendMessage(userDto);
+                    log.debug("отправлено письмо на адрес " + userDto.getEmail());
+                }
+            } catch (ReadPropertiesException | MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.start();
 
-    public void clearField() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                thread.interrupt();
+                log.debug("Поток isAlive() поcле отправки письма " + thread.isAlive());
+            }
+        }, 10000);
+    }
+
+    private void clearField() {
         passwordField.setValue("");
         confirmPassword.setValue("");
         emailField.setValue("");
@@ -181,7 +208,7 @@ public class RegistrationForm extends VerticalLayout {
         passwordField.setValue("");
     }
 
-    private boolean checkRegistrationAndAddNewUser(UserDto userDto, UserService userService) {
+    private void checkRegistrationAndAddNewUser(UserDto userDto, UserService userService) {
         final String PASSWORD_MISTAKE = "Пароли не совпадают. Проверьте правильность ввода.";
         final String LOGIN_MISTAKE = "Обязательное поле login пустое. Проверьте правильность ввода.";
 
@@ -197,8 +224,15 @@ public class RegistrationForm extends VerticalLayout {
                     LOGIN_MISTAKE));
         } else {
             userService.addNewUser(userDto);
-            return true;
         }
-        return false;
+    }
+
+    private void oldSessionFinish() {
+        Label label = new Label("Для регистрации нового пользователя выйдите из приложения");
+        add(label);
+        Button exit = new Button("Выход");
+        exit.addClickListener(e -> exit.getUI()
+                .ifPresent(ui -> ui.navigate("/logout")));
+        add(exit);
     }
 }

@@ -1,5 +1,5 @@
 {
-  "frontendFolder": "/Users/andreyturkey/Documents/dev/my-cooking-book/frontend",
+  "frontendFolder": "/Users/andreyturkey/Documents/dev/my-cooking-book/./frontend",
   "themeFolder": "themes",
   "themeResourceFolder": "/Users/andreyturkey/Documents/dev/my-cooking-book/target/flow-frontend",
   "staticOutput": "/Users/andreyturkey/Documents/dev/my-cooking-book/target/classes/META-INF/VAADIN/webapp/VAADIN/static",

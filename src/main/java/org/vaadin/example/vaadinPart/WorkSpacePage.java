@@ -15,7 +15,6 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 
 @Route("/workSpace")
-//@PermitAll
 @Setter
 @Slf4j
 @RolesAllowed(value = "USER")

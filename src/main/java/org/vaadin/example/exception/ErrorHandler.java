@@ -39,4 +39,16 @@ public class ErrorHandler {
         log.error(ex.getMessage() + " - ошибка валидации CONFLICT");
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(ReadPropertiesException.class)
+    public ErrorResponse handleReadPropertiesException(final ReadPropertiesException e) {
+        log.error(e.getMessage() + " - ошибка чтения файла mail.properties");
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(SendMessageException.class)
+    public ErrorResponse handleSendMessageException(final SendMessageException e) {
+        log.error(e.getMessage() + " - ошибка ошибка отправки сообщения пользователя при регистрации");
+        return new ErrorResponse(e.getMessage());
+    }
 }
