@@ -1,3 +1,11 @@
+### The application allows the user to register and receive credentials by email.
+### The app allows you to record food recipes with detailed descriptions and describe each component of the meal in detail.
+### Future plans include developing an interface for users without registration.
+### Upload food photos.
+### Upload a list of products and quantities to purchase in the store.
+### And much more.)
+### You can send your suggestions for improvement to the email address andrei4-09@mail.ru
+
 # Project Base for Vaadin and Spring Boot
 
 This project can be used as a starting point to create your own Vaadin application with Spring Boot.
