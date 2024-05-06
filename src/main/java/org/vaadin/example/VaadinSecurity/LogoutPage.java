@@ -14,7 +14,6 @@ import javax.annotation.security.PermitAll;
 @PermitAll
 public class LogoutPage extends VerticalLayout {
 
-
     public LogoutPage(@Autowired SecurityService securityService) {
 
         setSizeFull();
@@ -25,7 +24,6 @@ public class LogoutPage extends VerticalLayout {
         logo.addClassName("logo");
 
         VerticalLayout header;
-        //if (securityService.getAuthenticatedUser() != null) {
         if (!securityService.getCurrentUserLogin().equals("Anonymous")) {
             Button logout = new Button("Выйти", click ->
                     securityService.logout());

@@ -1,6 +1,7 @@
 package org.vaadin.example.vaadinPart;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -36,14 +37,17 @@ public class WorkSpacePage extends VerticalLayout  {
 
     private void createButtons() {
         Button newRecipe = new Button("Новый рецепт", new Icon(VaadinIcon.NOTEBOOK));
+        newRecipe.setClassName("button");
         newRecipe.addClickListener(e -> newRecipe.getUI()
                 .ifPresent(ui -> ui.navigate(NewRecipeForm.class)));
 
         Button myRecipes = new Button("Мои рецепты", new Icon(VaadinIcon.RECORDS));
+        myRecipes.setClassName("button");
         myRecipes.addClickListener(e -> myRecipes.getUI()
                 .ifPresent(ui -> ui.navigate(AllUserRecipe.class)));
 
         Button buyProduct = new Button("Купить продукты", new Icon(VaadinIcon.CART));
+        buyProduct.setClassName("button");
         /*buyProduct.addClickListener(e -> buyProduct.getUI()
                 .ifPresent(ui -> ui.navigate(RegistrationDone.class, userEmail)));*/
 
@@ -52,6 +56,7 @@ public class WorkSpacePage extends VerticalLayout  {
                 .ifPresent(ui -> ui.navigate(LogoutPage.class)));*/
 
         Button logout = new Button("Выйти", new Icon(VaadinIcon.CART));
+        logout.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
         logout.addClickListener(e -> securityService.logout());
 
 

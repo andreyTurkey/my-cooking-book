@@ -2,6 +2,7 @@ package org.vaadin.example.vaadinPart;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
@@ -9,9 +10,9 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.spring.annotation.SpringComponent;
-import com.vaadin.flow.spring.annotation.UIScope;
+
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.example.UserLogin;
 import org.vaadin.example.dto.RecipeDto;
 import org.vaadin.example.mapper.RecipeMapper;
+import org.vaadin.example.repository.PhotoLinkRepository;
 import org.vaadin.example.repository.RecipeRepository;
+import org.vaadin.example.service.PhotoLinkService;
+import org.vaadin.example.service.ProductService;
 
-import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,16 +34,23 @@ import java.util.stream.Collectors;
 @RolesAllowed(value = "USER")
 @Setter
 @Slf4j
+//@PreserveOnRefresh
 @VaadinSessionScope
 public class AllUserRecipe extends VerticalLayout {
 
     private final RecipeRepository recipeRepository;
+    private final PhotoLinkService photoLinkService;
+    private final ProductService productService;
     private Grid<RecipeDto> recipeGrid;
     private List<RecipeDto> recipeDtos;
     private static Div hint;
 
-    public AllUserRecipe(@Autowired RecipeRepository recipeRepository) {
+    public AllUserRecipe(@Autowired RecipeRepository recipeRepository,
+                         @Autowired ProductService productService,
+                         @Autowired PhotoLinkService photoLinkService) {
         this.recipeRepository = recipeRepository;
+        this.productService = productService;
+        this.photoLinkService = photoLinkService;
 
         recipeDtos = recipeRepository.findAllByUserLogin(UserLogin.getCurrentUserLogin())
                 .stream()
@@ -65,17 +75,33 @@ public class AllUserRecipe extends VerticalLayout {
                     button.addThemeVariants(ButtonVariant.LUMO_ICON,
                             ButtonVariant.LUMO_ERROR,
                             ButtonVariant.LUMO_TERTIARY);
-                    button.addClickListener(e -> this.removeInvitation(recipeDto));
+                    button.addClickListener(e -> button.getUI()
+                            .ifPresent(ui -> ui.navigate(AllUserRecipe.class)));
                     button.setIcon(new Icon(VaadinIcon.CHECK));
                 })).setHeader("Изменить")
                 .setWidth("7em").setFlexGrow(0);
+
+        ConfirmDialog dialog = new ConfirmDialog();
 
         recipeGrid.addColumn(
                 new ComponentRenderer<>(Button::new, (button, recipeDto) -> {
                     button.addThemeVariants(ButtonVariant.LUMO_ICON,
                             ButtonVariant.LUMO_ERROR,
                             ButtonVariant.LUMO_TERTIARY);
-                    button.addClickListener(e -> this.removeInvitation(recipeDto));
+                    button.addClickListener(e -> {
+                        dialog.setHeader("Удалить рецепт?");
+                        dialog.setText("Вы удалите рецепт без возможности восстановления");
+                        dialog.setRejectable(true);
+                        dialog.setRejectText("Отмена");
+                        dialog.addRejectListener(event -> event.getSource().close());
+                        dialog.setConfirmText("ОК");
+                        log.debug("ТЕКУЩИЙ ID Рецепта " + recipeDto.getId());
+                        dialog.addConfirmListener(event -> {
+                            log.debug("ВОДШЕБСТВО С АЙДИ - " +recipeDto.getId());
+                            this.removeInvitation(recipeDto);
+                        });
+                        dialog.open();
+                    });
                     button.setIcon(new Icon(VaadinIcon.TRASH));
                 })).setHeader("Удалить")
                 .setWidth("7em").setFlexGrow(0);
@@ -91,13 +117,15 @@ public class AllUserRecipe extends VerticalLayout {
     }
 
     private void removeInvitation(RecipeDto recipeDto) {
-        log.debug("Кол-во рецептов до удаления = " + recipeDtos.size());
+        log.debug("Пришел в метод рецепт с ID = " + recipeDto);
         if (recipeDto == null)
             return;
+        log.debug("Продукы для удаления: " + recipeDto.getProducts());
+        productService.deleteProduct(recipeDto.getProducts());
+        photoLinkService.deleteRecipePhotoLink(recipeDto.getId());
         recipeDtos.remove(recipeDto);
         recipeRepository.deleteById(recipeDto.getId());
         this.refreshGrid();
-        log.debug("Кол-во рецептов после удаления = " + recipeDtos.size());
     }
 
     private void refreshGrid() {
@@ -123,7 +151,6 @@ public class AllUserRecipe extends VerticalLayout {
         Button returnToMainPage = new Button("На главную страницу");
         returnToMainPage.addClickListener(e -> returnToMainPage.getUI()
                 .ifPresent(ui -> ui.navigate(WorkSpacePage.class)));
-        //returnToMainPage.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
         return  returnToMainPage;
     }
 }

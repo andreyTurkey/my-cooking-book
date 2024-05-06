@@ -7,6 +7,7 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -18,20 +19,24 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.vaadin.example.UserLogin;
 import org.vaadin.example.dto.RecipeDto;
 import org.vaadin.example.mapper.RecipeMapper;
+import org.vaadin.example.model.PhotoLink;
 import org.vaadin.example.model.product.Product;
 import org.vaadin.example.model.product.ProductMeasure;
 import org.vaadin.example.model.product.ProductName;
 import org.vaadin.example.model.product.Recipe;
+import org.vaadin.example.repository.PhotoLinkRepository;
 import org.vaadin.example.repository.ProductMeasureRepository;
 import org.vaadin.example.repository.ProductNameRepository;
 import org.vaadin.example.repository.RecipeRepository;
@@ -40,13 +45,15 @@ import javax.annotation.security.RolesAllowed;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Route("/newRecipe")
 //@PreserveOnRefresh
-@RolesAllowed(value = "USER")
+@AnonymousAllowed
+//@RolesAllowed(value = "USER")
 @Setter
 @Slf4j
-@VaadinSessionScope
+@UIScope
 public class NewRecipeForm extends VerticalLayout {
 
     private final ProductNameRepository productNameRepository;
@@ -65,15 +72,21 @@ public class NewRecipeForm extends VerticalLayout {
     private TextField durationField;
     private Checkbox checkboxPublicPermission;
     private Recipe recipeFromDb;
+    private UploadMemoryBuffer uploadMemoryBuffer;
+    private PhotoLinkRepository photoLinkRepository;
 
     public NewRecipeForm(
             @Autowired ProductNameRepository productNameRepository,
             @Autowired ProductMeasureRepository productMeasureRepository,
-            @Autowired RecipeRepository recipeRepository
+            @Autowired RecipeRepository recipeRepository,
+            @Autowired UploadMemoryBuffer uploadMemoryBuffer,
+            @Autowired PhotoLinkRepository photoLinkRepository
     ) {
+        this.photoLinkRepository = photoLinkRepository;
         this.productNameRepository = productNameRepository;
         this.productMeasureRepository = productMeasureRepository;
         this.recipeRepository = recipeRepository;
+        this.uploadMemoryBuffer = uploadMemoryBuffer;
 
         //addClassNames("my-view");
 
@@ -104,11 +117,13 @@ public class NewRecipeForm extends VerticalLayout {
         descriptionField.setRequired(true);
         add(descriptionField);
 
-        add(descriptionField);
+        Label photoUpload = new Label("Загрузить фото");
+        photoUpload.getStyle().set("font-weight", "500");
+        Div div = new Div(photoUpload, uploadMemoryBuffer.getUpload());
+        add(div);
     }
 
     private void setupRecordRecipe() {
-
         Button createRecipe = new Button("Записать рецепт", event -> {
             Binder<RecipeDto> binder = new Binder<>(RecipeDto.class);
             binder.forField(nameField).bind(RecipeDto::getName, RecipeDto::setName);
@@ -122,7 +137,11 @@ public class NewRecipeForm extends VerticalLayout {
                 recipeDto.setDateOfCreating(LocalDate.now());
 
                 recipeFromDb = recipeRepository.save(RecipeMapper.getRecipe(this.checkRecipeDto(recipeDto)));
-                log.debug("Рецепт из базы = " + recipeFromDb);
+                List<PhotoLink> links = uploadMemoryBuffer.getLinks();
+                log.debug("ЛИНКИ СПИСКОМ - " + links);
+                links.forEach(l -> l.setRecipeId(recipeFromDb.getId()));
+                log.debug("ЛИНКИ СПИСКОМ после сета recipe ID - " + links);
+                photoLinkRepository.saveAll(links);
             } catch (ValidationException e) {
                 throw new RuntimeException(e);
             }
@@ -131,7 +150,10 @@ public class NewRecipeForm extends VerticalLayout {
         createRecipe.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 
         createRecipe.addClickListener(e -> createRecipe.getUI()
-                .ifPresent(ui -> ui.navigate(AllUserRecipe.class)));
+                .ifPresent(ui -> {
+                    refreshGrid();
+                    ui.navigate(AllUserRecipe.class);
+                }));
 
         add(createRecipe);
     }

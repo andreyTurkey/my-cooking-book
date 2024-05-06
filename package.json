@@ -118,7 +118,6 @@
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.28.0",
     "lit": "2.3.0",
-    "lumo-css-framework": "^4.0.10",
     "proj4": "2.8.0",
     "terser": "^5.13.1"
   },
@@ -257,7 +256,6 @@
       "construct-style-sheets-polyfill": "3.1.0",
       "date-fns": "2.28.0",
       "lit": "2.3.0",
-      "lumo-css-framework": "^4.0.10",
       "proj4": "2.8.0"
     },
     "devDependencies": {
@@ -275,7 +273,7 @@
       "workbox-core": "6.5.0",
       "workbox-precaching": "6.5.0"
     },
-    "hash": "a2e734194f1e9dc07495a2cd2d30300d0019813f657f0a7189af9eeb3c4ae893"
+    "hash": "b04b9d84f38b1452eeb06fcf171036f5613c127c2361a3eb4785287881369438"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -396,7 +394,6 @@
     "@vaadin/common-frontend": "$@vaadin/common-frontend",
     "lit": "$lit",
     "date-fns": "$date-fns",
-    "proj4": "$proj4",
-    "lumo-css-framework": "$lumo-css-framework"
+    "proj4": "$proj4"
   }
 }

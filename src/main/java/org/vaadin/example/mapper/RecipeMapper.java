@@ -16,6 +16,7 @@ public class RecipeMapper {
                 .dateOfCreating(recipeDto.getDateOfCreating())
                 .products(recipeDto.getProducts())
                 .userLogin(recipeDto.getUserLogin())
+                .isModerated(recipeDto.getIsModerated())
                 .build();
     }
 
@@ -28,6 +29,7 @@ public class RecipeMapper {
                 .dateOfCreating(recipe.getDateOfCreating())
                 .products(new ArrayList<>())
                 .userLogin(recipe.getUserLogin())
+                .isModerated(recipe.getIsModerated())
                 .build();
     }
 }

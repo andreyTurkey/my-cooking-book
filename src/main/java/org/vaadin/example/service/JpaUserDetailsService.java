@@ -26,7 +26,6 @@ public class JpaUserDetailsService implements UserDetailsService {
 
         User user = userRepository.findUserByUsername(username)
                 .orElseThrow(s);
-        log.debug("Пользователь из базы: " + user);
         return new CustomUserDetails(user);
     }
 }

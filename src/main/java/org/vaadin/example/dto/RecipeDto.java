@@ -20,5 +20,6 @@ public class RecipeDto {
     private Boolean isPublic;
     private LocalDate dateOfCreating;
     private String userLogin;
+    private Boolean isModerated;
 }
 

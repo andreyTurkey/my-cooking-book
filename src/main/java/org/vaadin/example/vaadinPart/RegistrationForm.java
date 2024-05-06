@@ -60,8 +60,6 @@ public class RegistrationForm extends VerticalLayout {
             securityService.logout();
         }
 
-        log.debug("ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ SECURITY " + UserLogin.getCurrentUserLogin());
-
         Binder<UserDto> binder = new Binder<>(UserDto.class);
 
         setSizeFull();
@@ -142,6 +140,7 @@ public class RegistrationForm extends VerticalLayout {
                 binder.writeBean(userDto);
                 checkRegistrationAndAddNewUser(userDto, userService);
                 authorityService.addNewUserAuthority(new Authority(userDto.getName(), "USER"));
+                log.debug("Новый пользователь: " + userDto);
             } catch (ValidationException e) {
                 throw new RuntimeException(e);
             }
@@ -152,7 +151,6 @@ public class RegistrationForm extends VerticalLayout {
         createAccount.addClickListener(e -> {
                     if (!userDto.getEmail().isBlank()) {
                         sendAboutRegistrationMail();
-                        log.debug("ПОЛЬЗОВАТЕЛЬ " + userDto);
                         createAccount.getUI()
                                 .ifPresent(ui -> ui.navigate(ConfirmRegistrationPage.class));
                     } else {
@@ -169,7 +167,6 @@ public class RegistrationForm extends VerticalLayout {
 
         Text warning = new Text(
                 "Настоящее приложение является учебным.. " +
-                        /*"Мы не гарантируем сохранность данных. " +*/
                         "Владелец сайта не является оператором персональных данных."
         );
         add(warning);
@@ -180,7 +177,6 @@ public class RegistrationForm extends VerticalLayout {
             try {
                 if (registrationMail.setUserEmail(userDto)) {
                     registrationMail.sendMessage(userDto);
-                    log.debug("отправлено письмо на адрес " + userDto.getEmail());
                 }
             } catch (ReadPropertiesException | MessagingException e) {
                 throw new RuntimeException(e);
@@ -194,7 +190,6 @@ public class RegistrationForm extends VerticalLayout {
             @Override
             public void run() {
                 thread.interrupt();
-                log.debug("Поток isAlive() поcле отправки письма " + thread.isAlive());
             }
         }, 10000);
     }
@@ -225,14 +220,5 @@ public class RegistrationForm extends VerticalLayout {
         } else {
             userService.addNewUser(userDto);
         }
-    }
-
-    private void oldSessionFinish() {
-        Label label = new Label("Для регистрации нового пользователя выйдите из приложения");
-        add(label);
-        Button exit = new Button("Выход");
-        exit.addClickListener(e -> exit.getUI()
-                .ifPresent(ui -> ui.navigate("/logout")));
-        add(exit);
     }
 }

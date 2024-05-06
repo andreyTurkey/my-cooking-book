@@ -57,5 +57,4 @@ import '@vaadin/tabs/theme/lumo/vaadin-tab.js';
 import '@vaadin/tabs/theme/lumo/vaadin-tabs.js';
 import '@vaadin/time-picker/theme/lumo/vaadin-time-picker.js';
 import '@vaadin/upload/src/vaadin-upload-file.js';
-import '@vaadin/upload/theme/lumo/vaadin-upload.js';
 import '@vaadin/virtual-list/vaadin-virtual-list.js';

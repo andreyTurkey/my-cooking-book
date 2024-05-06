@@ -24,9 +24,10 @@ import org.vaadin.example.VaadinSecurity.SecurityService;
 public class MainPage extends VerticalLayout {
 
     public MainPage(@Autowired SecurityService securityService) {
-        this.getElement().getStyle().set("background", "url(\"Pizza_920x1080.jpg\")");
+        //this.getElement().getStyle().set("background", "url(\"Pizza_920x1080.jpg\")");
+        /*this.getElement().getStyle().set("background", "url(\"Pizza.png\")");
         this.getElement().getStyle().set("background-size", "100vw 120vh");
-        this.getElement().getStyle().set("filter", "opacity(100%)");
+        this.getElement().getStyle().set("filter", "opacity(100%)");*/
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
@@ -53,7 +54,12 @@ public class MainPage extends VerticalLayout {
         registration.addClickListener(e -> registration.getUI()
                 .ifPresent(ui -> ui.navigate(RegistrationForm.class)));
 
-        VerticalLayout verticalLayout = new VerticalLayout(comeIn, registration);
+        Button withoutRegistrationComeIn = new Button("Войти без регистрации");
+        withoutRegistrationComeIn.setClassName("button");
+        registration.addClickListener(e -> registration.getUI()
+                .ifPresent(ui -> ui.navigate(PublicRecipesPage.class)));
+
+        VerticalLayout verticalLayout = new VerticalLayout(comeIn, registration, withoutRegistrationComeIn);
         verticalLayout.setAlignItems(Alignment.CENTER);
         add(verticalLayout);
     }

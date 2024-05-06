@@ -42,4 +42,7 @@ public class Recipe {
 
     @Column(name = "user_login")
     private String userLogin;
+
+    @Column(name = "is_moderated")
+    private Boolean isModerated;
 }
