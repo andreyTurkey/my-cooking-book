@@ -6,6 +6,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.annotation.UIScope;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import javax.annotation.security.RolesAllowed;
 @Setter
 @Slf4j
 @RolesAllowed(value = "USER")
+@UIScope
 public class WorkSpacePage extends VerticalLayout  {
 
     private String userEmail;

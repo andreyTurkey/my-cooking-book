@@ -10,9 +10,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
-
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.example.UserLogin;
 import org.vaadin.example.dto.RecipeDto;
 import org.vaadin.example.mapper.RecipeMapper;
-import org.vaadin.example.repository.PhotoLinkRepository;
 import org.vaadin.example.repository.RecipeRepository;
 import org.vaadin.example.service.PhotoLinkService;
 import org.vaadin.example.service.ProductService;
@@ -67,43 +64,52 @@ public class AllUserRecipe extends VerticalLayout {
         recipeGrid.setWidth("50%");
         recipeGrid.setAllRowsVisible(true);
         recipeGrid.addColumn(RecipeDto::getDateOfCreating).setHeader("Дата создания")
-                        .setWidth("10em").setFlexGrow(0);
+                .setWidth("10em").setFlexGrow(0);
         recipeGrid.addColumn(RecipeDto::getName).setHeader("Название").setAutoWidth(true);
 
         recipeGrid.addColumn(
-                new ComponentRenderer<>(Button::new, (button, recipeDto) -> {
-                    button.addThemeVariants(ButtonVariant.LUMO_ICON,
-                            ButtonVariant.LUMO_ERROR,
-                            ButtonVariant.LUMO_TERTIARY);
-                    button.addClickListener(e -> button.getUI()
-                            .ifPresent(ui -> ui.navigate(AllUserRecipe.class)));
-                    button.setIcon(new Icon(VaadinIcon.CHECK));
-                })).setHeader("Изменить")
+                        new ComponentRenderer<>(Button::new, (button, recipeDto) -> {
+                            button.addThemeVariants(ButtonVariant.LUMO_ICON,
+                                    ButtonVariant.LUMO_ERROR,
+                                    ButtonVariant.LUMO_TERTIARY);
+                            button.addClickListener(e -> button.getUI()
+                                    .ifPresent(ui -> ui.navigate(AllUserRecipe.class)));
+                            button.setIcon(new Icon(VaadinIcon.CHECK));
+                        })).setHeader("Изменить")
                 .setWidth("7em").setFlexGrow(0);
 
-        ConfirmDialog dialog = new ConfirmDialog();
+        /*recipeGrid.addColumn(
+                        new ComponentRenderer<>(Button::new, (button, recipeDto) -> {
+                            button.addThemeVariants(ButtonVariant.LUMO_ICON,
+                                    ButtonVariant.LUMO_ERROR,
+                                    ButtonVariant.LUMO_TERTIARY);
+                            button.addClickListener(e -> this.removeInvitation(recipeDto));
+                            button.setIcon(new Icon(VaadinIcon.TRASH));
+                        })).setHeader("Удалить")
+                .setWidth("5em").setFlexGrow(0);*/
 
         recipeGrid.addColumn(
-                new ComponentRenderer<>(Button::new, (button, recipeDto) -> {
-                    button.addThemeVariants(ButtonVariant.LUMO_ICON,
-                            ButtonVariant.LUMO_ERROR,
-                            ButtonVariant.LUMO_TERTIARY);
-                    button.addClickListener(e -> {
-                        dialog.setHeader("Удалить рецепт?");
-                        dialog.setText("Вы удалите рецепт без возможности восстановления");
-                        dialog.setRejectable(true);
-                        dialog.setRejectText("Отмена");
-                        dialog.addRejectListener(event -> event.getSource().close());
-                        dialog.setConfirmText("ОК");
-                        log.debug("ТЕКУЩИЙ ID Рецепта " + recipeDto.getId());
-                        dialog.addConfirmListener(event -> {
-                            log.debug("ВОДШЕБСТВО С АЙДИ - " +recipeDto.getId());
-                            this.removeInvitation(recipeDto);
-                        });
-                        dialog.open();
-                    });
-                    button.setIcon(new Icon(VaadinIcon.TRASH));
-                })).setHeader("Удалить")
+                        new ComponentRenderer<>(Button::new, (button, removalRecipe) -> {
+                            button.addThemeVariants(ButtonVariant.LUMO_ICON,
+                                    ButtonVariant.LUMO_ERROR,
+                                    ButtonVariant.LUMO_TERTIARY);
+                            button.addClickListener(e -> {
+                                ConfirmDialog dialog = new ConfirmDialog();
+                                dialog.setHeader("Удалить рецепт?");
+                                dialog.setText("Вы удалите рецепт без возможности восстановления");
+                                dialog.setRejectable(true);
+                                dialog.setRejectText("Отмена");
+                                dialog.addRejectListener(event -> event.getSource().close());
+                                dialog.setConfirmText("ОК");
+                                log.debug("ТЕКУЩИЙ ID Рецепта " + removalRecipe.getId());
+                                dialog.addConfirmListener(event -> {
+                                    this.removeInvitation(removalRecipe);
+                                    //this.refreshGrid();
+                                });
+                                dialog.open();
+                            });
+                            button.setIcon(new Icon(VaadinIcon.TRASH));
+                        })).setHeader("Удалить")
                 .setWidth("7em").setFlexGrow(0);
 
         recipeGrid.setItems(recipeDtos);
@@ -151,6 +157,6 @@ public class AllUserRecipe extends VerticalLayout {
         Button returnToMainPage = new Button("На главную страницу");
         returnToMainPage.addClickListener(e -> returnToMainPage.getUI()
                 .ifPresent(ui -> ui.navigate(WorkSpacePage.class)));
-        return  returnToMainPage;
+        return returnToMainPage;
     }
 }

@@ -49,8 +49,8 @@ import java.util.stream.Collectors;
 
 @Route("/newRecipe")
 //@PreserveOnRefresh
-@AnonymousAllowed
-//@RolesAllowed(value = "USER")
+//@AnonymousAllowed
+@RolesAllowed(value = "USER")
 @Setter
 @Slf4j
 @UIScope
@@ -138,9 +138,9 @@ public class NewRecipeForm extends VerticalLayout {
 
                 recipeFromDb = recipeRepository.save(RecipeMapper.getRecipe(this.checkRecipeDto(recipeDto)));
                 List<PhotoLink> links = uploadMemoryBuffer.getLinks();
-                log.debug("ЛИНКИ СПИСКОМ - " + links);
+                //log.debug("ЛИНКИ СПИСКОМ - " + links);
                 links.forEach(l -> l.setRecipeId(recipeFromDb.getId()));
-                log.debug("ЛИНКИ СПИСКОМ после сета recipe ID - " + links);
+                //log.debug("ЛИНКИ СПИСКОМ после сета recipe ID - " + links);
                 photoLinkRepository.saveAll(links);
             } catch (ValidationException e) {
                 throw new RuntimeException(e);
@@ -151,6 +151,7 @@ public class NewRecipeForm extends VerticalLayout {
 
         createRecipe.addClickListener(e -> createRecipe.getUI()
                 .ifPresent(ui -> {
+                    addedProduct.clear();
                     refreshGrid();
                     ui.navigate(AllUserRecipe.class);
                 }));

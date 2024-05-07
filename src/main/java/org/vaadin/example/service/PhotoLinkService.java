@@ -2,6 +2,7 @@ package org.vaadin.example.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.vaadin.example.repository.PhotoLinkRepository;
 
 @Component
@@ -13,6 +14,7 @@ public class PhotoLinkService {
         this.photoLinkRepository = photoLinkRepository;
     }
 
+    @Transactional
     public void deleteRecipePhotoLink(Long recipeId) {
         photoLinkRepository.removeAllByRecipeId(recipeId);
     }
