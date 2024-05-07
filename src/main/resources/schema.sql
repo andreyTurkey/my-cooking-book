@@ -1,5 +1,5 @@
---drop table IF EXISTS users CASCADE;
---drop table IF EXISTS authorities CASCADE;
+drop table IF EXISTS users CASCADE;
+drop table IF EXISTS authorities CASCADE;
 drop table IF EXISTS product_name CASCADE;
 drop table IF EXISTS product_measure CASCADE;
 drop table IF EXISTS product CASCADE;
