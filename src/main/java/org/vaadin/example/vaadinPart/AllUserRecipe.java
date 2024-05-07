@@ -27,11 +27,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Route("/allUserRecipe")
-//@PermitAll
 @RolesAllowed(value = "USER")
 @Setter
 @Slf4j
-//@PreserveOnRefresh
 @VaadinSessionScope
 public class AllUserRecipe extends VerticalLayout {
 
