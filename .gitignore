@@ -3,8 +3,6 @@
 .settings
 .project
 .classpath
-${photoDirectory}1.jpeg
-src/main/java/org/vaadin/example/model/PhotoLink.java
 
 *.iml
 .DS_Store
