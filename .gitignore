@@ -3,6 +3,7 @@
 .settings
 .project
 .classpath
+mail.properties
 
 *.iml
 .DS_Store
