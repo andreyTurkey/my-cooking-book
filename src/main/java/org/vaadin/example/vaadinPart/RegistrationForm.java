@@ -3,7 +3,6 @@ package org.vaadin.example.vaadinPart;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -173,11 +172,18 @@ public class RegistrationForm extends VerticalLayout {
     }
 
     private void sendAboutRegistrationMail() {
-        Runnable task = () -> {
+        /*Runnable task = () -> {
             try {
                 if (registrationMail.setUserEmail(userDto)) {
                     registrationMail.sendMessage(userDto);
                 }
+            } catch (ReadPropertiesException | MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        };*/
+        Runnable task = () -> {
+            try {
+                registrationMail.sendMessage(userDto);
             } catch (ReadPropertiesException | MessagingException e) {
                 throw new RuntimeException(e);
             }

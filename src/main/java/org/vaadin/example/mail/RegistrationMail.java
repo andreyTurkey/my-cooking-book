@@ -1,5 +1,6 @@
 package org.vaadin.example.mail;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.AbstractDriverBasedDataSource;
 import org.springframework.stereotype.Component;
 import org.vaadin.example.dto.UserDto;
@@ -15,18 +16,23 @@ import java.util.Date;
 import java.util.Properties;
 
 @Component
+@Slf4j
 public class RegistrationMail {
 
-    private Address userEmail = new InternetAddress("andrei4-09@mail.ru");
+    //private Address userEmail = new InternetAddress("andrei4-09@mail.ru");
 
-    public RegistrationMail() throws AddressException {
+    public RegistrationMail() {
     }
 
     public void sendMessage(UserDto userDto) throws ReadPropertiesException, MessagingException {
 
+        if (userDto.getEmail().isBlank()) {
+            return;
+        }
+
         final Properties props = new Properties();
         try (InputStream fis = new FileInputStream(
-                "/Users/andreyturkey/Documents/mail.properties")) {
+                "/properties/mail.properties")) {
             props.load(fis);
         } catch (Exception e) {
             throw new ReadPropertiesException("Unable to find the specified mail.properties file");
@@ -34,9 +40,11 @@ public class RegistrationMail {
 
         Session session = Session.getDefaultInstance(props);
 
+        try {
+
         final MimeMessage message = new MimeMessage(session);
 
-        message.addFrom(new InternetAddress[]{new InternetAddress("andrei4-09@mail.ru")});
+        message.addFrom(new InternetAddress[]{new InternetAddress("andrei4-09@mail.ru")}); // адрес отправителя
 
         message.setSubject("Регистрация на сайте my-cooking-book.ru");
 
@@ -48,25 +56,29 @@ public class RegistrationMail {
                 "Логин: %s\n" +
         "Пароль: %s", userDto.getName(), userDto.getPassword()));
 
-        message.addRecipient(Message.RecipientType.TO, userEmail);
+        message.addRecipient(Message.RecipientType.TO, new InternetAddress(userDto.getEmail()));
 
         message.setSentDate(new Date());
 
-        String userLogin = "andrei4-09@mail.ru";
-        String userPassword = "dYQsCwZuXSLTVMLMEeMT";
+        //String userLogin = "andrei4-09@mail.ru";
+        //String userPassword = "dYQsCwZuXSLTVMLMEeMT";
 
-        Transport transport = session.getTransport("smtp");
-        transport.connect("smtp.mail.ru", 465, userLogin, userPassword);
+        //Transport transport = session.getTransport("smtp");
+        //transport.connect("smtp.mail.ru", 465, userLogin, userPassword);
 
-        transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
+        //transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
+        Transport.send(message);
+        } catch (MessagingException mex){
+            log.error(mex.getMessage());
+        }
     }
 
-    public boolean setUserEmail(UserDto userDto) throws AddressException {
+   /* public boolean setUserEmail(UserDto userDto) throws AddressException {
         if (!userDto.getEmail().isBlank()) {
             this.userEmail = new InternetAddress(userDto.getEmail());
             return true;
         }  else {
             return false;
         }
-    }
+    }*/
 }

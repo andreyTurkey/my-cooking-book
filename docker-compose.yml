@@ -12,6 +12,8 @@ services:
       - Stat_URL=jdbc:postgresql://my-cooking-db:5433/my_cooking_book
       - Stat_USER=postgres
       - Stat_PASSWORD=root
+    volumes:
+      - photo_volume:/photo
 
   db:
     image: postgres:14-alpine
@@ -31,3 +33,4 @@ services:
 
 volumes:
   myapp:
+  photo_volume:
