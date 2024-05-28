@@ -29,7 +29,6 @@ public class RegistrationMail {
         if (userDto.getEmail().isBlank()) {
             return;
         }
-
         final Properties props = new Properties();
         try (InputStream fis = new FileInputStream(
                 "/properties/mail.properties")) {
