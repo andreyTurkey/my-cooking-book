@@ -33,7 +33,7 @@ public class RegistrationMail {
         }
         final Properties props = new Properties();
         try (InputStream fis = new FileInputStream(
-                "/properties/mail.properties")) {
+                "/mail.properties")) {
             props.load(fis);
         } catch (Exception e) {
             throw new ReadPropertiesException("Unable to find the specified mail.properties file");
