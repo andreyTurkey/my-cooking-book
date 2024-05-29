@@ -14,6 +14,7 @@ services:
       - Stat_PASSWORD=root
     volumes:
       - photo_volume:/photo
+      - mail_properties:/properties
 
   db:
     image: postgres:14-alpine
@@ -34,3 +35,4 @@ services:
 volumes:
   myapp:
   photo_volume:
+  mail_properties:

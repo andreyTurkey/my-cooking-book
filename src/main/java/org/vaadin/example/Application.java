@@ -16,7 +16,7 @@ import org.springframework.context.annotation.PropertySource;
 @SpringBootApplication(exclude = ErrorMvcAutoConfiguration.class)
 //@NpmPackage(value = "lumo-css-framework", version = "^4.0.10")
 @Theme("myapp")
-@PropertySource("classpath:mail.properties")
+@PropertySource("classpath:/properties/mail.properties")
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
 
     public static void main(String[] args) {
