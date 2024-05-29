@@ -1,6 +1,7 @@
 package org.vaadin.example.mail;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.AbstractDriverBasedDataSource;
 import org.springframework.stereotype.Component;
 import org.vaadin.example.dto.UserDto;
@@ -19,7 +20,8 @@ import java.util.Properties;
 @Slf4j
 public class RegistrationMail {
 
-    //private Address userEmail = new InternetAddress("andrei4-09@mail.ru");
+    @Value("${mail.user}") String login;
+    @Value("${mail.password}") String password;
 
     public RegistrationMail() {
     }
@@ -43,7 +45,7 @@ public class RegistrationMail {
 
         final MimeMessage message = new MimeMessage(session);
 
-        message.addFrom(new InternetAddress[]{new InternetAddress("andrei4-09@mail.ru")}); // адрес отправителя
+        message.addFrom(new InternetAddress[]{new InternetAddress("andrei4-09@mail.ru")});
 
         message.setSubject("Регистрация на сайте my-cooking-book.ru");
 
@@ -59,15 +61,12 @@ public class RegistrationMail {
 
         message.setSentDate(new Date());
 
-        //String userLogin = "andrei4-09@mail.ru";
-        //String userPassword = "dYQsCwZuXSLTVMLMEeMT";
+        Transport transport = session.getTransport("smtp");
+        transport.connect("smtp.mail.ru", 465, login, password);
 
-        //Transport transport = session.getTransport("smtp");
-        //transport.connect("smtp.mail.ru", 465, userLogin, userPassword);
+        transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
 
-        //transport.sendMessage(message, message.getRecipients(Message.RecipientType.TO));
-        Transport.send(message);
-        } catch (MessagingException mex){
+        } catch (MessagingException mex) {
             log.error(mex.getMessage());
         }
     }
