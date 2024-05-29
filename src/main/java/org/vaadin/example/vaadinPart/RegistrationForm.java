@@ -48,7 +48,6 @@ public class RegistrationForm extends VerticalLayout {
     final UserDto userDto = new UserDto();
     final RegistrationMail registrationMail;
 
-
     public RegistrationForm(UserService userService,
                             AuthorityService authorityService,
                             @Autowired RegistrationMail registrationMail,
