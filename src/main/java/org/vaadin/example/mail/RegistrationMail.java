@@ -64,7 +64,7 @@ public class RegistrationMail {
             e.printStackTrace();
         }
     }
-}
+
 
    /* public boolean setUserEmail(UserDto userDto) throws AddressException {
         if (!userDto.getEmail().isBlank()) {
