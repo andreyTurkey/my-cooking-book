@@ -171,15 +171,6 @@ public class RegistrationForm extends VerticalLayout {
     }
 
     private void sendAboutRegistrationMail() {
-        /*Runnable task = () -> {
-            try {
-                if (registrationMail.setUserEmail(userDto)) {
-                    registrationMail.sendMessage(userDto);
-                }
-            } catch (ReadPropertiesException | MessagingException e) {
-                throw new RuntimeException(e);
-            }
-        };*/
         Runnable task = () -> {
             try {
                 registrationMail.sendMessage(userDto);

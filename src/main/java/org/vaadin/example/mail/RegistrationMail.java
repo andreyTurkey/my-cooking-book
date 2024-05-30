@@ -50,28 +50,22 @@ public class RegistrationMail {
             message.setFrom(new InternetAddress("andrei4-09@mail.ru"));
             message.setRecipients(
                     Message.RecipientType.TO,
-                    InternetAddress.parse("andrei4-09@mail.ru")
+                    InternetAddress.parse(userDto.getEmail())
             );
-            message.setSubject("Testing Gmail TLS");
-            message.setText("Dear Mail Crawler,"
-                    + "\n\n Please do not spam my email!");
+            message.setSubject("Регистрация на сайте my-cooking-book.ru");
+
+            message.setText(String.format("Здравствуйте!\n" +
+                    "Поздравляем с успешной регистрацией в приложении для хранения рецептов.\n" +
+                    "\n"+
+                    "Данные для входа:\n" +
+                    "\n" +
+                    "Логин: %s\n" +
+                    "Пароль: %s", userDto.getName(), userDto.getPassword()));
 
             Transport.send(message);
-
-            System.out.println("Done");
 
         } catch (MessagingException e) {
             e.printStackTrace();
         }
     }
-
-
-   /* public boolean setUserEmail(UserDto userDto) throws AddressException {
-        if (!userDto.getEmail().isBlank()) {
-            this.userEmail = new InternetAddress(userDto.getEmail());
-            return true;
-        }  else {
-            return false;
-        }
-    }*/
 }
