@@ -28,8 +28,7 @@ public class UploadMemoryBuffer extends Div {
     private Upload multiFileUpload;
     private List<PhotoLink> links = new ArrayList<>();
 
-    public UploadMemoryBuffer(@Value("${photoDirectory}") String photoDir,
-                              @Autowired PhotoLinkRepository photoLinkRepository) {
+    public UploadMemoryBuffer(@Value("${photoDirectory}") String photoDir) {
 
         MultiFileMemoryBuffer multiFileMemoryBuffer = new MultiFileMemoryBuffer();
         multiFileUpload = new Upload(multiFileMemoryBuffer);
