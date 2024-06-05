@@ -6,11 +6,9 @@ import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.vaadin.example.model.PhotoLink;
-import org.vaadin.example.repository.PhotoLinkRepository;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

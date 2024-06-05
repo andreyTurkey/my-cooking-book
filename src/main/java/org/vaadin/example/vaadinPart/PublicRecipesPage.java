@@ -17,7 +17,6 @@ import java.util.List;
 
 @Route("/publicRecipe")
 @AnonymousAllowed
-//@RolesAllowed(value = "USER")
 @Setter
 @Slf4j
 @VaadinSessionScope

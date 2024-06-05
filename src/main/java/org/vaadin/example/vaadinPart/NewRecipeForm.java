@@ -17,17 +17,11 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.router.PreserveOnRefresh;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.auth.AnonymousAllowed;
-import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
-import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.vaadin.example.UserLogin;
 import org.vaadin.example.dto.RecipeDto;
 import org.vaadin.example.mapper.RecipeMapper;
@@ -45,7 +39,6 @@ import javax.annotation.security.RolesAllowed;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Route("/newRecipe")
 //@PreserveOnRefresh
@@ -88,8 +81,6 @@ public class NewRecipeForm extends VerticalLayout {
         this.recipeRepository = recipeRepository;
         this.uploadMemoryBuffer = uploadMemoryBuffer;
 
-        //addClassNames("my-view");
-
         this.setupNameAndDescription();
         this.addProductLayout();
         this.setupGrid();
@@ -117,7 +108,7 @@ public class NewRecipeForm extends VerticalLayout {
         descriptionField.setRequired(true);
         add(descriptionField);
 
-        Label photoUpload = new Label("Загрузить фото");
+        Label photoUpload = new Label("Загрузить фото (не более 3 фото)");
         photoUpload.getStyle().set("font-weight", "500");
         Div div = new Div(photoUpload, uploadMemoryBuffer.getUpload());
         add(div);
@@ -138,9 +129,7 @@ public class NewRecipeForm extends VerticalLayout {
 
                 recipeFromDb = recipeRepository.save(RecipeMapper.getRecipe(this.checkRecipeDto(recipeDto)));
                 List<PhotoLink> links = uploadMemoryBuffer.getLinks();
-                //log.debug("ЛИНКИ СПИСКОМ - " + links);
                 links.forEach(l -> l.setRecipeId(recipeFromDb.getId()));
-                //log.debug("ЛИНКИ СПИСКОМ после сета recipe ID - " + links);
                 photoLinkRepository.saveAll(links);
             } catch (ValidationException e) {
                 throw new RuntimeException(e);
@@ -223,7 +212,7 @@ public class NewRecipeForm extends VerticalLayout {
         productGrid.addColumn(Product::getProductMeasure).setHeader("Ед. изм");
         productGrid.addColumn(Product::getProductQuantity).setHeader("Кол-во");
 
-        productGrid.addColumn( // кнопка удаления
+        productGrid.addColumn(
                 new ComponentRenderer<>(Button::new, (button, product) -> {
                     button.addThemeVariants(ButtonVariant.LUMO_ICON,
                             ButtonVariant.LUMO_ERROR,

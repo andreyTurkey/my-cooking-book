@@ -21,20 +21,16 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import com.vaadin.flow.spring.annotation.VaadinSessionScope;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.vaadin.example.UserLogin;
 import org.vaadin.example.dto.RecipeDto;
 import org.vaadin.example.mapper.RecipeMapper;
-import org.vaadin.example.model.PhotoLink;
 import org.vaadin.example.model.product.Product;
 import org.vaadin.example.model.product.ProductMeasure;
 import org.vaadin.example.model.product.ProductName;
 import org.vaadin.example.model.product.Recipe;
-import org.vaadin.example.repository.PhotoLinkRepository;
 import org.vaadin.example.repository.ProductMeasureRepository;
 import org.vaadin.example.repository.ProductNameRepository;
 import org.vaadin.example.repository.RecipeRepository;
@@ -51,7 +47,7 @@ import java.util.List;
 @AnonymousAllowed
 //@VaadinSessionScope
 //@Component
-public class ChangeRecipeForm extends VerticalLayout /*extends NewRecipeForm*/ implements HasUrlParameter<String> {
+public class ChangeRecipeForm extends VerticalLayout implements HasUrlParameter<String> {
 
     private final ProductNameRepository productNameRepository;
     private final ProductMeasureRepository productMeasureRepository;
@@ -69,23 +65,16 @@ public class ChangeRecipeForm extends VerticalLayout /*extends NewRecipeForm*/ i
     private TextField durationField;
     private Checkbox checkboxPublicPermission;
     private Recipe recipeFromDb;
-    //private UploadMemoryBuffer uploadMemoryBuffer;
-    private PhotoLinkRepository photoLinkRepository;
     private Long recipeId;
 
     public ChangeRecipeForm(
             @Autowired ProductNameRepository productNameRepository,
             @Autowired ProductMeasureRepository productMeasureRepository,
-            @Autowired RecipeRepository recipeRepository,
-            @Autowired UploadMemoryBuffer uploadMemoryBuffer,
-            @Autowired PhotoLinkRepository photoLinkRepository
+            @Autowired RecipeRepository recipeRepository
     ) {
-        this.photoLinkRepository = photoLinkRepository;
         this.productNameRepository = productNameRepository;
         this.productMeasureRepository = productMeasureRepository;
         this.recipeRepository = recipeRepository;
-        //this.uploadMemoryBuffer = uploadMemoryBuffer;
-
         this.setupNameAndDescription();
         this.addProductLayout();
         this.setupGrid();
@@ -122,8 +111,6 @@ public class ChangeRecipeForm extends VerticalLayout /*extends NewRecipeForm*/ i
 
         Label photoUpload = new Label("Загрузить фото");
         photoUpload.getStyle().set("font-weight", "500");
-        //Div div = new Div(photoUpload, uploadMemoryBuffer.getUpload());
-        //add(div);
     }
 
     private void setupRecordRecipe() {
@@ -140,9 +127,6 @@ public class ChangeRecipeForm extends VerticalLayout /*extends NewRecipeForm*/ i
                 recipeDto.setDateOfCreating(LocalDate.now());
 
                 recipeFromDb = recipeRepository.save(RecipeMapper.getRecipe(this.checkRecipeDto(recipeDto)));
-                //List<PhotoLink> links = uploadMemoryBuffer.getLinks();
-                //links.forEach(l -> l.setRecipeId(recipeFromDb.getId()));
-                //photoLinkRepository.saveAll(links);
             } catch (ValidationException e) {
                 throw new RuntimeException(e);
             }
@@ -220,7 +204,7 @@ public class ChangeRecipeForm extends VerticalLayout /*extends NewRecipeForm*/ i
         productGrid.addColumn(Product::getProductMeasure).setHeader("Ед. изм");
         productGrid.addColumn(Product::getProductQuantity).setHeader("Кол-во");
 
-        productGrid.addColumn( // кнопка удаления
+        productGrid.addColumn(
                 new ComponentRenderer<>(Button::new, (button, product) -> {
                     button.addThemeVariants(ButtonVariant.LUMO_ICON,
                             ButtonVariant.LUMO_ERROR,

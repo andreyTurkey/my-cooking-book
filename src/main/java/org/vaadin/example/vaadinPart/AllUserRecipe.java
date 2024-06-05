@@ -76,16 +76,6 @@ public class AllUserRecipe extends VerticalLayout {
                         })).setHeader("Изменить")
                 .setWidth("7em").setFlexGrow(0);
 
-        /*recipeGrid.addColumn(
-                        new ComponentRenderer<>(Button::new, (button, recipeDto) -> {
-                            button.addThemeVariants(ButtonVariant.LUMO_ICON,
-                                    ButtonVariant.LUMO_ERROR,
-                                    ButtonVariant.LUMO_TERTIARY);
-                            button.addClickListener(e -> this.removeInvitation(recipeDto));
-                            button.setIcon(new Icon(VaadinIcon.TRASH));
-                        })).setHeader("Удалить")
-                .setWidth("5em").setFlexGrow(0);*/
-
         recipeGrid.addColumn(
                         new ComponentRenderer<>(Button::new, (button, removalRecipe) -> {
                             button.addThemeVariants(ButtonVariant.LUMO_ICON,
@@ -102,7 +92,6 @@ public class AllUserRecipe extends VerticalLayout {
                                 log.debug("ТЕКУЩИЙ ID Рецепта " + removalRecipe.getId());
                                 dialog.addConfirmListener(event -> {
                                     this.removeInvitation(removalRecipe);
-                                    //this.refreshGrid();
                                 });
                                 dialog.open();
                             });

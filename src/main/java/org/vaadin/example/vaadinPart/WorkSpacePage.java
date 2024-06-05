@@ -10,10 +10,8 @@ import com.vaadin.flow.spring.annotation.UIScope;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.example.VaadinSecurity.LogoutPage;
 import org.vaadin.example.VaadinSecurity.SecurityService;
 
-import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 
 @Route("/workSpace")
@@ -22,8 +20,6 @@ import javax.annotation.security.RolesAllowed;
 @RolesAllowed(value = "USER")
 @UIScope
 public class WorkSpacePage extends VerticalLayout  {
-
-    private String userEmail;
 
     @Autowired
     private SecurityService securityService;
@@ -50,17 +46,10 @@ public class WorkSpacePage extends VerticalLayout  {
 
         Button buyProduct = new Button("Купить продукты", new Icon(VaadinIcon.CART));
         buyProduct.setClassName("button");
-        /*buyProduct.addClickListener(e -> buyProduct.getUI()
-                .ifPresent(ui -> ui.navigate(RegistrationDone.class, userEmail)));*/
-
-        /*Button logout = new Button("Выйти", new Icon(VaadinIcon.CART));
-        logout.addClickListener(e -> logout.getUI()
-                .ifPresent(ui -> ui.navigate(LogoutPage.class)));*/
 
         Button logout = new Button("Выйти", new Icon(VaadinIcon.CART));
         logout.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_ERROR);
         logout.addClickListener(e -> securityService.logout());
-
 
         VerticalLayout verticalLayout = new VerticalLayout(newRecipe, myRecipes, buyProduct, logout);
         verticalLayout.setAlignItems(Alignment.CENTER);
