@@ -14,7 +14,7 @@ h1 {
 html {
 
     /*background: url("Pizza_920x1080.jpg");*/
-    background: url("/photo/Pizza.png");
+    background: url("Pizza.png");
     background-size: 100vw 120vh;
     background-repeat: no-repeat;
     filter: opacity(100%);
